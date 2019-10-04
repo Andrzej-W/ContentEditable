@@ -1,26 +1,34 @@
 ﻿@page "/"
 @inject IJSRuntime JS
 
-<div ref="editor" contenteditable="@editMode">@((MarkupString)content)</div>
-<button onclick="@ChangeMode">@buttonText</button>
+@if (editMode)
+{
+  <div @ref="editorEdit" contenteditable>@((MarkupString)content)</div>
+}
+else
+{
+  <div @ref="editorDisplay">@((MarkupString)content)</div>
+}
+<button @onclick="ChangeMode">@buttonText</button>
 <div>Current content:<br />@content</div>
 @functions
 {
-    ElementRef editor;
-    const string buttonTextStart = "Start editing";
-    const string buttonTextStop = "Stop editing";
-    string content = "ab";
-    bool editMode = false;
-    string buttonText = buttonTextStart;
+  ElementReference editorDisplay;
+  ElementReference editorEdit;
+  const string buttonTextStart = "Start editing";
+  const string buttonTextStop = "Stop editing";
+  string content = "ab";
+  bool editMode = false;
+  string buttonText = buttonTextStart;
 
-    async Task ChangeMode()
+  async Task ChangeMode()
+  {
+    editMode = !editMode;
+    buttonText = editMode ? buttonTextStop : buttonTextStart;
+    if (!editMode)
     {
-        editMode = !editMode;
-        buttonText = editMode ? buttonTextStop : buttonTextStart;
-        if (!editMode)
-        {
-            string tmp = await JS.InvokeAsync<string>("JsLib.getInnerHtml", editor);
-            content = tmp.Replace("<!--!-->", string.Empty);
-        }
+      string tmp = await JS.InvokeAsync<string>("JsLib.getInnerHtml", editorEdit);
+      content = tmp.Replace("<!--!-->", string.Empty);
     }
+  }
 }
