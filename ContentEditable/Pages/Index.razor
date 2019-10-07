@@ -3,14 +3,19 @@
 
 @if (editMode)
 {
-  <div @ref="editorEdit" contenteditable>@((MarkupString)content)</div>
+  <div @ref="editorEdit" @onkeydown="GetContent" contenteditable>
+    @((MarkupString)content)
+  </div>
 }
 else
 {
-  <div @ref="editorDisplay">@((MarkupString)content)</div>
+  <div @ref="editorDisplay">
+    @((MarkupString)content)
+  </div>
 }
 <button @onclick="ChangeMode">@buttonText</button>
-<div>Current content:<br />@content</div>
+<div>Current content:<br />@content2</div>
+
 @functions
 {
   ElementReference editorDisplay;
@@ -18,6 +23,7 @@ else
   const string buttonTextStart = "Start editing";
   const string buttonTextStop = "Stop editing";
   string content = "ab";
+  string content2 = String.Empty;
   bool editMode = false;
   string buttonText = buttonTextStart;
 
@@ -30,5 +36,10 @@ else
       string tmp = await JS.InvokeAsync<string>("JsLib.getInnerHtml", editorEdit);
       content = tmp.Replace("<!--!-->", string.Empty);
     }
+  }
+  async Task GetContent()
+  {
+    string tmp = await JS.InvokeAsync<string>("JsLib.getInnerHtml", editorEdit);
+    content2 = tmp.Replace("<!--!-->", string.Empty);
   }
 }
