@@ -1,2 +1,2 @@
 # ContentEditable
-Blazor contenteditable problem
+Blazor contenteditable simple example.
